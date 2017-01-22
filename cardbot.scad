@@ -1,44 +1,105 @@
 $fs=0.5;
+bot_skin_thick = 1; //the thickness of the material being used
+crease = .1; //gap to make the creases to bend the body
 
-bot_body_width = 40;
-bot_body_height = 20;
-bot_body_length = 70;
-bot_skin_thick = 1;
-motor_body_height = 7;
-motor_shaft_diameter = 2;
-crease = .1;
-bot_wheel_setback = 10;
-bot_wheel_clearance = bot_skin_thick+1;
-bot_wheel_shaft_r = 2;
+motor_body_height = 7; //twice the distance from the motor mount to the center of the motor shaft
+motor_shaft_diameter = 2; //diameter of the motor shaft.
+
+bot_body_width = 40; //width of the robots body
+bot_body_height = 20; //height of the robots body (width of the sides)
+bot_body_length = 70; //length of the robots body
+
+bot_wheel_axel_diameter = 4; //diameter of the axle where the wheels mount
+bot_wheel_setback = 10; //how far to move the wheel back from center.
+bot_wheel_clearance = 1.2; //distance from side of the body to the wheel hub
+
+bot_wheel_shaft_r = bot_wheel_axel_diameter/2; 
+bot_wheel_clear = bot_skin_thick + bot_wheel_clearance;
 bot_wheel_r = bot_body_height/2+1;
-
+bot_wheel_hub_r = bot_wheel_shaft_r*1.8 + bot_wheel_r*0.2;
 bot_wheel_c = bot_wheel_r+motor_body_height/2+motor_shaft_diameter/2;
 
-folded = $t;
+
+
+
+folded = lookup($t, [
+	[0,0],
+	[.3,1],
+	[.6,1],
+	[.8,0]
+	]);
+
+
+if (folded > 0.7) {
+  translate([bot_wheel_setback,
+   -bot_body_width/2+bot_skin_thick,
+   -motor_body_height/2]) 
+      dc_motor_small();
+  translate([bot_wheel_setback,bot_body_width/2-bot_skin_thick,-motor_body_height/2]) 
+    rotate([180,0,0]) 
+      dc_motor_small();
+  rotate([90,0,0]) //rotate to fold
+    translate([bot_wheel_setback,-bot_wheel_c,0]) //shift down when folded
+      color("grey") 
+      cylinder(r=bot_wheel_shaft_r, 
+        h=bot_body_width+bot_wheel_clear*4 , 
+        center=true);
+  }
 
 //platform
-translate([bot_wheel_setback,-bot_body_width/2+bot_skin_thick,0]) 
-  dc_motor_small();
-translate([bot_wheel_setback,bot_body_width/2-bot_skin_thick,0]) rotate([180,0,0]) 
-  dc_motor_small();
-translate([0,0,motor_body_height/2]) //raise body off motors
-  cube([bot_body_length, bot_body_width, bot_skin_thick],center=true);
+cube([bot_body_length, bot_body_width, bot_skin_thick],center=true);
 
 
 //left wheel
 translate([bot_wheel_setback,
-			-(bot_body_width/2+crease+bot_wheel_clearance)
-			-(bot_wheel_r+bot_body_height)*(1-folded),
-			motor_body_height/2])
-rotate([90*folded,0,0]) 
+			-(bot_body_width/2+crease+bot_wheel_clear) //move just outside body
+			-(bot_wheel_r+bot_body_height)*(1-folded), //and farther when not folded
+			0]) 
+rotate([90*folded,0,0]) //rotate to fold
+  translate([0,-bot_wheel_c*folded,0]) //shift down when folded
+    difference() { //wheel, then punch out hole for axil
+      cylinder(r=bot_wheel_r, h=bot_skin_thick,center=true);
+      cylinder(r=bot_wheel_shaft_r, h=bot_skin_thick+crease,center=true);
+      }
+
+//left wheel axil support
+translate([-bot_wheel_r*(1-folded) + bot_wheel_setback*folded,
+			-(bot_body_width/2+crease+bot_wheel_clear-bot_skin_thick)
+			-(bot_wheel_r+bot_body_height)*(1-folded), //and farther when not folded
+			0])
+rotate([90*folded,0,0]) //rotate to fold
+  translate([0,-bot_wheel_c*folded,0]) //shift down when folded
+    difference() { //wheel, then punch out hole for axil
+      cylinder(r=bot_wheel_hub_r, h=bot_skin_thick,center=true);
+      cylinder(r=bot_wheel_shaft_r, h=bot_skin_thick+crease,center=true);
+      }
+
+//right wheel
+translate([bot_wheel_setback,
+			+(bot_body_width/2+crease+bot_wheel_clear)
+			+(bot_wheel_r+bot_body_height)*(1-folded),
+			0])
+rotate([180-90*folded,0,0]) 
   translate([0,-bot_wheel_c*folded,0])
     difference() {
       cylinder(r=bot_wheel_r, h=bot_skin_thick,center=true);
       cylinder(r=bot_wheel_shaft_r, h=bot_skin_thick+crease,center=true);
       }
 
+//right wheel axil support
+translate([-bot_wheel_r*(1-folded) + bot_wheel_setback*folded,
+			+(bot_body_width/2+crease+bot_wheel_clear-bot_skin_thick)
+			+(bot_wheel_r+bot_body_height)*(1-folded), //and farther when not folded
+			0])
+rotate([180-90*folded,0,0]) //rotate to fold
+  translate([0,-bot_wheel_c*folded,0]) //shift down when folded
+    difference() { //wheel, then punch out hole for axil
+      cylinder(r=bot_wheel_hub_r, h=bot_skin_thick,center=true);
+      cylinder(r=bot_wheel_shaft_r, h=bot_skin_thick+crease,center=true);
+      }
+
 //left side
-translate([0,-(bot_body_width/2)-crease,motor_body_height/2])
+translate([0,-(bot_body_width/2)-crease,0])
 rotate([90*folded,0,0]) 
   difference() {
     translate([0,-bot_body_height/2,0])
@@ -49,12 +110,20 @@ rotate([90*folded,0,0])
 	  cylinder(r=motor_shaft_diameter/2+crease, h=bot_skin_thick+crease, center=true);
 	}
 
-
 //right side
-translate([0,(bot_body_width/2)+crease,motor_body_height/2])
+translate([0,(bot_body_width/2)+crease,0])
 rotate([180-90*folded,0,0]) 
-  translate([0,-bot_body_height/2,0])
-	cube([bot_body_length, bot_body_height, bot_skin_thick],center=true);
+  difference() {
+    translate([0,-bot_body_height/2,0])
+	  cube([bot_body_length, bot_body_height, bot_skin_thick],center=true);
+	translate([bot_wheel_setback,-bot_wheel_c,0]) //punch out main axle
+	  cylinder(r=bot_wheel_shaft_r+crease, h=bot_skin_thick+crease, center=true);
+	translate([bot_wheel_setback,-motor_body_height/2,0]) //punch out for motor shaft
+	  cylinder(r=motor_shaft_diameter/2+crease, h=bot_skin_thick+crease, center=true);
+	}
+
+
+
 
 module dc_motor_small(
 	body_length = 15,
