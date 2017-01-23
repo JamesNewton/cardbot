@@ -4,6 +4,8 @@ http://www.thingiverse.com/thing:2055990
 
 Parametric base, sides, and wheels for a robot made from cardboard. Simple, but easy and super cheap to make and... to remake if it gets destroyed in a robot battle! Open in customizer to experiment with different widths, lengths, heights, wheel sizes and the position of the wheels front to back. Switch the view to dxf to make a laser cutter outline. The extra cardboard can be used to make cross braces to strengthen the body.
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/257xCgosHWQ" frameborder="0" allowfullscreen></iframe>
+
 The main motivation for writing this as a script was to make it easy to play with different sizes and still have a very accurate alignment so it can use regular DC motors, with the motor shaft rubbing against the edge of the wheel to turn it. Stretch a fat rubber band over the wheel (size the wheels for the rubber band) and the motor shaft will make solid contact. The small "washers" have different sized holes in them. The larger hole washer is glued to the wheel before slipping over the axle during assembly. It spaces the wheel away from the body, and helps keep it on the shaft.. The smaller hole washer is glued to the axle with hot glue after assembly to hold the wheel in place.
 
 If you use RC servos, or gearmotors, just ignore the upper motor holes or set the motor sizes to 0. Honestly, you probably don't need this script then.
