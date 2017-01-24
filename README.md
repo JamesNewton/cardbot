@@ -17,7 +17,6 @@ A good motor / controller / firmware package for a robot like this can be found 
 
 https://github.com/jmalins/BattleBot-Control
 
+Update: Added a pattern of slots to the wheel to support detection of wheel movement for feedback to the controller, allowing precise movement... a low resolution servo encoder. The simplest form of this would be a bare wire, wound in and out between the slots, with a pair of wires from the side of the robot that are shorted by that wire when the wheel turns. Note this can not detect the direction of rotation, but for most cases, this is enough.
+
 TODO: Cut one and see how it works, adjust, iterate. Especially the crease parameter to see if it can be turned into a score rather than a cut.
-
-TODO: Add a pattern of slots or holes to the wheel to support detection of wheel movement for feedback to the controller, allowing precise movement... a low resolution servo encoder.
-
